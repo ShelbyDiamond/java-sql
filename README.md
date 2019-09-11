@@ -141,17 +141,23 @@ ORDER BY ordercount
 > This can be done by adding an ORDER BY clause to the previous answer
 
 > SELECT company_name,
-
-       (SELECT COUNT(o.order_id)
-        FROM orders o
-        WHERE o.customer_id = c.customer_id) as ordercount
-
-FROM customers c  
-ORDER BY ordercount DESC
+> (SELECT COUNT(o.order_id)
+> FROM orders o
+> WHERE o.customer_id =
+> c.customer_id) as ordercount
+> FROM customers c  
+> ORDER BY ordercount DESC
 
 ### list orders grouped by customer's city showing number of orders per city. Returns 69 Records with _Aachen_ showing 6 orders and _Albuquerque_ showing 18 orders.
 
 > This is very similar to the previous two queries, however, it focuses on the City rather than the CustomerName
+
+SELECT city,
+(SELECT COUNT(o.order_id)  
+ FROM orders o  
+ WHERE o.ship_city = c.city) as ordercount
+FROM customers c  
+ORDER BY ordercount DESC
 
 ## Data Normalization
 
@@ -166,6 +172,46 @@ Take the following data and normalize it into a 3NF database.
 | Sam         | Ginger   | Dog      | Miss Kitty | Cat        | Bubble     | Fish       | Yes         | No           |
 
 ---
+
+### 1NF - pets broken into separate rows
+
+- Person Table
+  | Person Id | Person Name | Fenced Yard | City Deweller |
+  |-----------|-------------|-------------|---------------|
+  | 1 | Jane | No | Yes |
+  | 2 | Bob | No | No |
+  | 3 | Sam | Yes | No |
+
+- Pet Table
+  | Pet Id | Person Id | Pet Name | Pet Type |
+  |--------|-----------|------------|----------|
+  | 1 | 1 | Ellie | Dog |
+  | 2 | 1 | Tiger | Cat |
+  | 3 | 1 | Toby | Turtle |
+  | 4 | 2 | Joe | Horse |
+  | 5 | 3 | Ginger | Dog |
+  | 6 | 3 | Miss Kitty | Cat |
+  | 7 | 3 | Bubble | Fish |
+
+### 2NF - Fenced Yard is moved to pet table
+
+- Person Table
+  | Person Id | Person Name | City Deweller |
+  |-----------|-------------|---------------|
+  | 1 | Jane | Yes |
+  | 2 | Bob | No |
+  | 3 | Sam | No |
+
+- Pet Table
+  | Pet Id | Person Id | Pet Name | Pet Type | Fenced Yard |
+  |--------|-----------|------------|----------|-------------|
+  | 1 | 1 | Ellie | Dog | No |
+  | 2 | 1 | Tiger | Cat | No |
+  | 3 | 1 | Toby | Turtle | No |
+  | 4 | 2 | Joe | Horse | No |
+  | 5 | 3 | Ginger | Dog | No |
+  | 6 | 3 | Miss Kitty | Cat | No |
+  | 7 | 3 | Bubble | Fish | Yes |
 
 ## Stretch Goals
 
