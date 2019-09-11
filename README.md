@@ -45,6 +45,10 @@ FROM Customers
 WHERE City = 'London'
 ORDER BY CustomerID;
 
+Answer:
+
+customer ID numbers: 4, 11, 16, 19, 53, 72
+
 ### find all customers with postal code 1010. Returns 3 customers.
 
 > This can be done with SELECT and WHERE clauses
@@ -54,17 +58,36 @@ FROM Customers
 WHERE PostalCode = 1010
 ORDER BY CustomerID;
 
+Answer:
+
+customer ID numbers: 12, 54, 64
+
 ### find the phone number for the supplier with the id 11. Should be (010) 9984510.
 
 > This can be done with SELECT and WHERE clauses
+
+SELECT Phone
+FROM Suppliers
+WHERE SupplierID = 11
+
+Answer: (010) 9984510
 
 ### list orders descending by the order date. The order with date 1998-05-06 should be at the top.
 
 > This can be done with SELECT, WHERE, and ORDER BY clauses
 
+SELECT \*
+FROM Orders
+ORDER BY OrderDate DESC
+
 ### find all suppliers who have names longer than 20 characters. You can use `length(company_name)` to get the length of the name. Returns 11 records.
 
 > This can be done with SELECT and WHERE clauses
+
+SELECT \*
+FROM Suppliers
+WHERE length(SupplierName) > 20
+ORDER BY SupplierName;
 
 ### find all customers that include the word 'MARKET' in the contact title. Should return 19 records.
 
@@ -73,6 +96,10 @@ ORDER BY CustomerID;
 > Don't forget the wildcard '%' symbols at the beginning and end of your substring to denote it can appear anywhere in the string in question
 
 > Remember to convert your contact title to all upper case for case insenstive comparing so upper(contact_title)
+
+SELECT \*
+FROM Customers
+WHERE UPPER(contact_title) LIKE '%market%';
 
 ### add a customer record for
 
@@ -85,9 +112,16 @@ ORDER BY CustomerID;
 - the country is 'Middle Earth'
   > This can be done with the INSERT INTO clause
 
+INSERT INTO customers(customer_id, company_name, contact_name, address, city, postal_code, country)
+VALUES ('SHIRE', 'The Shire', 'Bilbo Baggins', '1 Hobbit-Hole', 'Bag End', '111', 'Middle Earth')
+
 ### update _Bilbo Baggins_ record so that the postal code changes to _"11122"_.
 
 > This can be done with UPDATE and WHERE clauses
+
+UPDATE customers
+SET postal_code = '11122'
+WHERE contact_name = 'Bilbo Baggins'
 
 ### list orders grouped by customer showing the number of orders per customer. _Rattlesnake Canyon Grocery_ should have 18 orders.
 
@@ -95,9 +129,25 @@ ORDER BY CustomerID;
 
 > There is more information about the COUNT clause on [W3 Schools](https://www.w3schools.com/sql/sql_count_avg_sum.asp)
 
+SELECT contact_name, company_name,  
+ (SELECT COUNT(o.order_id)  
+ FROM orders o  
+ WHERE o.customer_id = c.customer_id) as ordercount  
+FROM customers c  
+ORDER BY ordercount
+
 ### list customers names and the number of orders per customer. Sort the list by number of orders in descending order. _Save-a-lot Markets should be at the top with 31 orders followed by \_Ernst Handle_ with 30 orders. Last should be _Centro comercial Moctezuma_ with 1 order.
 
 > This can be done by adding an ORDER BY clause to the previous answer
+
+> SELECT company_name,
+
+       (SELECT COUNT(o.order_id)
+        FROM orders o
+        WHERE o.customer_id = c.customer_id) as ordercount
+
+FROM customers c  
+ORDER BY ordercount DESC
 
 ### list orders grouped by customer's city showing number of orders per city. Returns 69 Records with _Aachen_ showing 6 orders and _Albuquerque_ showing 18 orders.
 
